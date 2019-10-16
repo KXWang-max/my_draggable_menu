@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .fin_li{
+            display: inline-block;
+            height: 30px;
+        }
+        .fun_btn{
+
+        }
+    </style>
+    <script src="jquery.js"></script>
+        <script type="text/javascript">
+            $(function (){
+                //添加节点功能 begin
+                $('.add').click(function(){
+                    //获取到需添加节点的位置
+                    var cont = $(this).parent().prev();
+                    // $('<li class="fin_li"><input class="fin_input" type="text" style="width: 100px;height: 20px;">').insertAfter(cont);
+                    $('<li class="fin_li"><input class="fin_input" type="text" style="width: 100px;height: 20px;"></li>').insertAfter(cont);
+
+                });
+                $(document).click(function (e) {
+                    //目标区域
+                    var target_area = $('.fin');
+                    if(!target_area.is(e.target) && target_area.has(e.target).length === 0){
+                        //input失去焦点时 变为li标签 同时出现编辑删除/功能
+                        $('.fin_input').blur(function(){
+                            $(this).hide();
+                            // $(this).parent().html('<li class="fin_li"> &nbsp;&nbsp;&nbsp;&nbsp;</li><button class="fun_btn edit">编辑</button> <button class="fun_btn remove">删除</button>');
+                            $(this).parent().html('<li class="fin_li only"><span></span>&nbsp;&nbsp;&nbsp;&nbsp;<button class="fun_btn edit">编辑</button> <button class="fun_btn remove">删除</button></li>');
+                            $('.only').find('span').text($(this).val());
+                            $('.fin_li').removeClass('only');
+                        });
+                    }
+                });
+                //添加节点功能 end
+
+                //删除节点功能 begin
+                $('.remove').on('click',function () {
+                    $(this).parent().remove();
+                });
+                //删除节点功能 end
+
+
+
+
+
+            });
+
+    </script>
+</head>
+<body>
+ <div id="test" style="width: 300px;height: auto;background-color: #ccc;">
+     <ul>
+         <li class="fin_li"><span>1111111111</span>&nbsp;&nbsp;&nbsp;&nbsp;<button class="fun_btn edit">编辑</button> <button class="fun_btn remove">删除</button></li>
+         <li class="fin_li"><span>2222222222</span>&nbsp;&nbsp;&nbsp;&nbsp;<button class="fun_btn edit">编辑</button> <button class="fun_btn remove">删除</button></li>
+         <li class="fin_li"><span>3333333333</span>&nbsp;&nbsp;&nbsp;&nbsp;<button class="fun_btn edit">编辑</button> <button class="fun_btn remove">删除</button></li>
+         <li class="fin_li"><span>4444444444</span>&nbsp;&nbsp;&nbsp;&nbsp;<button class="fun_btn edit">编辑</button> <button class="fun_btn remove">删除</button></li>
+         <li><button class="add">添加</button></li>
+     </ul>
+ </div>
+</body>
+</html>
