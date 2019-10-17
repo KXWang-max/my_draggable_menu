@@ -5429,7 +5429,7 @@ var widgetsMenu = $.widget( "ui.menu", {
 	_isDivider: function( item ) {
 
 		// Match hyphen, em dash, en dash
-		return !/[^\-\u2014\u2013\s]/.test( item.text() );
+		return !/[^\-\u2014\u2013\s]/.test( item.test() );
 	},
 
 	collapse: function( event ) {
@@ -5569,7 +5569,7 @@ var widgetsMenu = $.widget( "ui.menu", {
 				.filter( ".ui-menu-item" )
 					.filter( function() {
 						return regex.test(
-							$.trim( $( this ).children( ".ui-menu-item-wrapper" ).text() ) );
+							$.trim( $( this ).children( ".ui-menu-item-wrapper" ).test() ) );
 					} );
 	}
 } );
@@ -5643,7 +5643,7 @@ $.widget( "ui.autocomplete", {
 		// All other element types are determined by whether or not they're contentEditable
 		this.isMultiLine = isTextarea || !isInput && this._isContentEditable( this.element );
 
-		this.valueMethod = this.element[ isTextarea || isInput ? "val" : "text" ];
+		this.valueMethod = this.element[ isTextarea || isInput ? "val" : "test.html" ];
 		this.isNewMenu = true;
 
 		this._addClass( "ui-autocomplete-input" );
@@ -5836,7 +5836,7 @@ $.widget( "ui.autocomplete", {
 				label = ui.item.attr( "aria-label" ) || item.value;
 				if ( label && $.trim( label ).length ) {
 					this.liveRegion.children().hide();
-					$( "<div>" ).text( label ).appendTo( this.liveRegion );
+					$( "<div>" ).test( label ).appendTo( this.liveRegion );
 				}
 			},
 			menuselect: function( event, ui ) {
@@ -6136,7 +6136,7 @@ $.widget( "ui.autocomplete", {
 
 	_renderItem: function( ul, item ) {
 		return $( "<li>" )
-			.append( $( "<div>" ).text( item.label ) )
+			.append( $( "<div>" ).test( item.label ) )
 			.appendTo( ul );
 	},
 
@@ -6232,7 +6232,7 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
 			message = this.options.messages.noResults;
 		}
 		this.liveRegion.children().hide();
-		$( "<div>" ).text( message ).appendTo( this.liveRegion );
+		$( "<div>" ).test( message ).appendTo( this.liveRegion );
 	}
 } );
 
@@ -6583,7 +6583,7 @@ $.widget( "ui.checkboxradio", [ $.ui.formResetMixin, {
 
 			// The label contents could be text, html, or a mix. We concat each element to get a
 			// string representation of the label, without the input as part of it.
-			that.originalLabel += this.nodeType === 3 ? $( this ).text() : this.outerHTML;
+			that.originalLabel += this.nodeType === 3 ? $( this ).test() : this.outerHTML;
 		} );
 
 		// Set the label option if we found label text
@@ -7094,7 +7094,7 @@ if ( $.uiBackCompat !== false ) {
 		},
 
 		_setOption: function( key, value ) {
-			if ( key === "text" ) {
+			if ( key === "test.html" ) {
 				this._super( "showLabel", value );
 				return;
 			}
@@ -12346,7 +12346,7 @@ $.widget( "ui.dialog", {
 		// dialog in IE (#9312)
 		this.uiDialogTitlebarClose = $( "<button type='button'></button>" )
 			.button( {
-				label: $( "<a>" ).text( this.options.closeText ).html(),
+				label: $( "<a>" ).test( this.options.closeText ).html(),
 				icon: "ui-icon-closethick",
 				showLabel: false
 			} )
@@ -12373,7 +12373,7 @@ $.widget( "ui.dialog", {
 
 	_title: function( title ) {
 		if ( this.options.title ) {
-			title.text( this.options.title );
+			title.test( this.options.title );
 		} else {
 			title.html( "&#160;" );
 		}
@@ -12645,7 +12645,7 @@ $.widget( "ui.dialog", {
 			this.uiDialogTitlebarClose.button( {
 
 				// Ensure that we always pass a string
-				label: $( "<a>" ).text( "" + this.options.closeText ).html()
+				label: $( "<a>" ).test( "" + this.options.closeText ).html()
 			} );
 		}
 
@@ -14136,7 +14136,7 @@ var widgetsSelectmenu = $.widget( "ui.selectmenu", [ $.ui.formResetMixin, {
 
 	_setText: function( element, value ) {
 		if ( value ) {
-			element.text( value );
+			element.test( value );
 		} else {
 			element.html( "&#160;" );
 		}
@@ -14445,7 +14445,7 @@ var widgetsSelectmenu = $.widget( "ui.selectmenu", [ $.ui.formResetMixin, {
 			element: option,
 			index: index,
 			value: option.val(),
-			label: option.text(),
+			label: option.test(),
 			optgroup: optgroup.attr( "label" ) || "",
 			disabled: optgroup.prop( "disabled" ) || option.prop( "disabled" )
 		};
@@ -18231,7 +18231,7 @@ $.widget( "ui.tooltip", {
 			var title = $( this ).attr( "title" ) || "";
 
 			// Escape title, since we're going from an attribute to raw HTML
-			return $( "<a>" ).text( title ).html();
+			return $( "<a>" ).test( title ).html();
 		},
 		hide: true,
 

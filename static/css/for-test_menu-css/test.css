@@ -1,0 +1,56 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+#test{
+    width: 300px;
+    height: auto;
+    background-color: #f0f0f0;
+}
+.fin_input{
+    width: 180px;
+    height: 25px;
+}
+.fin_li{
+    display: inline-block;
+    width:300px;
+    height: 30px;
+    background-color:#ccc;
+    border: 2px solid #fff;
+    position: relative;
+}
+.fin_li:hover{
+
+}
+.fin_li p{
+    display:block;
+    height: 100%;
+    line-height: 30px;
+    position: absolute;
+    left: 0;
+}
+.fun_btn_div{
+    display: none!important;
+    width: 65px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+}
+.fun_btn{
+    border: none;
+}
+ .edit,.remove{
+    width: 30px;
+    height: 30px;
+}
+.add{
+    width: 300px;
+    height: 30px;
+}
+.add img,.edit img,.remove img{
+    width: 60%;
+    height: 60%;
+}

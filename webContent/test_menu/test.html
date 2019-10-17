@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <script src="../../static/js/jquery/jquery-3.4.1/jquery-3.4.1.js"></script>
+    <link rel="stylesheet" href="/my_draggable_menu/static/css/for-test_menu-css/test.css">
+
+
+        <script type="text/javascript">
+            $(function (){
+                //鼠标移入li显示function button
+                $('.fin_li').mouseover(function(){
+                    $(this).children().css('display','block');
+                });
+
+
+
+                //添加节点功能 begin  ----添加input节点，此时无编辑/删除按钮，input失去焦点时，变为li,同时出现编辑/删除按钮
+                $('.add').click(function(){
+                    //获取到需添加节点的位置
+                    var cont = $(this).parent().prev();
+                    $('<li class="fin_li"><input class="fin_input" type="text"></li>').insertAfter(cont);
+                });
+                $(document).click(function (e) {
+                    //目标区域
+                    // var target_area = $('.fin');
+                    // if(!target_area.is(e.target) && target_area.has(e.target).length === 0){
+                        //input失去焦点时 变为li标签 同时出现编辑删除/功能
+                        $('.fin_input').blur(function(){
+                            $(this).parent().replaceWith('<li class="fin_li only"><p></p><div class="fun_btn_div"><button class="fun_btn edit"><img src="/my_draggable_menu/static/images/for-test-menu/edit.svg" alt=""></button> <button class="fun_btn remove"><img src="/my_draggable_menu/static/images/for-test-menu/remove.svg" alt=""></button></div></li>');
+                            $('.only').find('p').text($(this).val());
+                            $('.fin_li').removeClass('only');
+                            //因replaceWith后，所有绑定的事件均失效，所以需要重新绑定编辑/删除等事件
+                            //edit
+                            $('.edit').bind('click',function(){
+                                //p标签无value,所以取text()
+                                var item_value = $(this).parent().prev().text();
+                                // console.log(item_value);
+                                $(this).parent().parent().html('<li class="fin_li"><input class="fin_input only" type="text"/></li>');
+                                $('.only').val(item_value);
+                                $('.fin_input').removeClass('only');
+                            });
+                            //remove
+                            $('.remove').bind('click',function(){
+                                $(this).parent().parent().remove();
+                            });
+                        });
+                    // }
+                });
+                //添加节点功能 end
+
+                //编辑结点功能 begin   ----将结点变为input,同时将原有值赋值给input
+                $('.edit').on('click',function () {
+                    //p标签无value,所以取text()
+                    var item_value = $(this).parent().prev().text();
+                    $(this).parent().parent().html('<li class="fin_li"><input class="fin_input only" type="text"/></li>');
+                    $('.only').val(item_value);
+                    $('.fin_input').removeClass('only');
+                });
+                //编辑结点功能 end
+
+                //删除节点功能 begin
+                $('.remove').on('click',function () {
+                    $(this).parent().remove();
+                });
+                //删除节点功能 end
+
+
+            });
+
+    </script>
+</head>
+<body>
+ <div id="test">
+     <ul>
+         <li class="fin_li"><p>1111111111</p><div class="fun_btn_div"><button class="fun_btn edit"><img src="/my_draggable_menu/static/images/for-test-menu/edit.svg" alt=""></button> <button class="fun_btn remove"><img src="/my_draggable_menu/static/images/for-test-menu/remove.svg" alt=""></button></div></li>
+         <li class="fin_li"><p>2222222222</p><div class="fun_btn_div"><button class="fun_btn edit"><img src="/my_draggable_menu/static/images/for-test-menu/edit.svg" alt=""></button> <button class="fun_btn remove"><img src="/my_draggable_menu/static/images/for-test-menu/remove.svg" alt=""></button></div></li>
+         <li class="fin_li"><p>3333333333</p><div class="fun_btn_div"><button class="fun_btn edit"><img src="/my_draggable_menu/static/images/for-test-menu/edit.svg" alt=""></button> <button class="fun_btn remove"><img src="/my_draggable_menu/static/images/for-test-menu/remove.svg" alt=""></button></div></li>
+         <li class="fin_li"><p>4444444444</p><div class="fun_btn_div"><button class="fun_btn edit"><img src="/my_draggable_menu/static/images/for-test-menu/edit.svg" alt=""></button> <button class="fun_btn remove"><img src="/my_draggable_menu/static/images/for-test-menu/remove.svg" alt=""></button></div></li>
+         <li class="fin_li"><button class="fun_btn add"><img src="/my_draggable_menu/static/images/for-test-menu/add.svg" alt=""></button></li>
+     </ul>
+ </div>
+</body>
+</html>
