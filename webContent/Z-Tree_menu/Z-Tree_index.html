@@ -10,6 +10,13 @@
         var zTree;
         var settings = {
             treeId:"tree_menu",//唯一标识
+
+            async:{
+                enable:true,
+                dataType:'JSON',
+                type:'get',
+                url:'',
+            },
             view:{
                 showTitle:false,
                 addHoverDom: addHoverDom,  //鼠标hover,显示添加节点
@@ -39,19 +46,20 @@
                     autoOpenTime:200  //拖拽时，父节点自动展开的延时间隔
                 }
             },
-            // callback:{
-            //     beforeRemove:beforeRemove,//点击删除时触发，用来提示用户是否确定删除（可以根据返回值 true|false 确定是否可以删除）
-            //     beforeEditName: beforeEditName,//点击编辑时触发，用来判断该节点是否能编辑
+            callback:{
+                   onDrop:zTreeOnDrop,//拖拽操作结束后
+                // beforeRemove:beforeRemove,//点击删除时触发，用来提示用户是否确定删除（可以根据返回值 true|false 确定是否可以删除）
+                // beforeEditName: beforeEditName,//点击编辑时触发，用来判断该节点是否能编辑
             //     beforeRename:beforeRename,//编辑结束时触发，用来验证输入的数据是否符合要求(也是根据返回值 true|false 确定是否可以编辑完成)
             //     onRemove:onRemove,//(beforeRemove返回true之后可以进行onRemove)删除节点后触发，用户后台操作
             //     onRename:onRename,//编辑后触发，用于操作后台
             //     beforeDrag:beforeDrag,//用户禁止拖动节点
             //     onClick:clickNode//点击节点触发的事件
-            // }
+            }
         };
         //层级结构数据
         // var zNodes = [
-        //     //注意，数据中的 menuName 必须与 settingss 中key 中定义的name一致，否则找不到
+        //     //注意，数据中的 menuName 必须与 settings 中key 中定义的name一致，否则找不到
         //     {menuName:"父节点1", open:true, children:[
         //             {menuName:"子节点1"}, {menuName:"子节点2"}]},
         //     {menuName:"父节点2", open:true, children:[
@@ -59,7 +67,7 @@
         // ];
         //平行结构数据
         var zNodes =[
-            { id:1, pId:0,  menuName:"总公司", open:true},
+            { id:1, pId:0,  menuName:"碧辟（中国）投资有限公司", open:true},
 
                 { id:11, pId:1, menuName:"合资公司 1"},
                     { id:111, pId:11, menuName:"有限公司 1-1"},
@@ -80,15 +88,20 @@
         var newCount = 1;
         function addHoverDom(treeId, treeNode) {
             var sObj = $("#" + treeNode.tId + "_span"); //获取节点信息
-            if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) return;
+            if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0 ||treeNode.pId == 0) return;
             var addStr = "<span class='button add' id='addBtn_" + treeNode.tId + "' title='add node' οnfοcus='this.blur();'></span>"; //定义添加按钮
             sObj.after(addStr); //加载添加按钮
             var btn = $("#addBtn_"+treeNode.tId);
             //绑定添加事件，并定义添加操作
             if (btn) btn.bind("click", function(){
                 var zTree = $.fn.zTree.getZTreeObj("treeDemo");
-                //add item
-                zTree.addNodes(treeNode, {id:(100 + newCount), pId:treeNode.id, name:"new node" + (newCount++)});
+                //每增加一个子节点，同时将子节点变为可编辑模式，暂定所有新加节点id为9（联调时更改）
+                zTree.addNodes(treeNode, {id:'9', pId:treeNode.id, menuName:"new node" + (newCount++)});
+                //node为所有新加节点的对象数组
+                var node = zTree.getNodesByParam("id", '9', null);
+                for(var index in node){
+                    zTree.editName(node[index]);
+                }
                 return false;
                 //将新节点添加到数据库中
                 // var menuName='NewNode';
@@ -104,7 +117,16 @@
         function removeHoverDom(treeId, treeNode) {
             $("#addBtn_"+treeNode.tId).unbind().remove();
         };
-
+        //拖拽操作结束后,对应修改被拖动节点的id/pId
+        function zTreeOnDrop(event, treeId, treeNodes, targetNode, moveType) {
+            //获取被拖动的节点
+            for (var index1 in treeNodes) {
+                console.log(treeNodes[index1]);
+                treeNodes[index1].pId = targetNode.id;
+            }
+            // console.log(treeNodes.length + ","+ treeNodes[0].id+ "," +treeNodes[0].pId + "," + treeNodes[0].menuName );
+            // console.log(treeNodes.length + "," + targetNode.id + "," + (targetNode ? (targetNode.tId + ", " + targetNode.menuName) : "isRoot" ));
+        };
 
         $(function (){
             zTreeObj = $.fn.zTree.init($("#treeDemo"), settings, zNodes); //初始化树
