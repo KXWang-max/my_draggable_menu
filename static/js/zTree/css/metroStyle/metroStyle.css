@@ -118,8 +118,8 @@ website:    http://code.google.com/p/jquerytree/
     background-color: transparent;
     background-repeat: no-repeat;
     background-attachment: scroll;
-    background-image: url("./img/metro.png");
-    *background-image: url("./img/metro.gif")
+    background-image: url("./img/metro_diy.png");
+    *background-image: url("./img/metro_diy.gif")
 }
 
 .ztree li span.button.chk {
@@ -297,15 +297,15 @@ website:    http://code.google.com/p/jquerytree/
 }
 
 .ztree li span.button.edit {
-    margin-left: 2px;
+    margin-left: 3px;
     margin-right: -1px;
-    background-position: -189px -21px;
+    background-position: -190px -22px;
     vertical-align: top;
     *vertical-align: middle
 }
 
 .ztree li span.button.edit:hover {
-    background-position: -168px -21px;
+    background-position: -168px -22px;
 }
 
 .ztree li span.button.remove {
@@ -317,7 +317,7 @@ website:    http://code.google.com/p/jquerytree/
 }
 
 .ztree li span.button.remove:hover {
-    background-position: -168px -42px;
+    background-position: -167px -42px;
 }
 
 .ztree li span.button.add {
@@ -356,9 +356,9 @@ span.tmpzTreeMove_arrow {
     background-color: transparent;
     background-repeat: no-repeat;
     background-attachment: scroll;
-    background-position: -168px -84px;
-    background-image: url("./img/metro.png");
-    *background-image: url("./img/metro.gif")
+    background-position: -172px -84px;
+    background-image: url("./img/metro_diy.png");
+    *background-image: url("./img/metro_diy.gif")
 }
 
 ul.ztree.zTreeDragUL {
