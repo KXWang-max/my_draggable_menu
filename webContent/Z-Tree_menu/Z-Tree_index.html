@@ -6,34 +6,46 @@
     <script src="/my_draggable_menu/static/js/jquery/jquery-3.4.1/jquery-3.4.1.js"></script>
     <script src="/my_draggable_menu/static/js/zTree/jquery.ztree.all.js"></script>
     <link rel="stylesheet" href="/my_draggable_menu/static/js/zTree/css/metroStyle/metroStyle.css">
-<!--    <script src="jquery-3.4.1.js"></script>-->
-<!--    <script src="jquery.ztree.all.js"></script>-->
-<!--    <link rel="stylesheet" href="metroStyle/metroStyle.css">-->
+    <style>
+        .btn{
+            width: 80px;
+            height: 27px;
+            line-height: 27px;
+            text-align: center;
+            outline: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: #4c4c4c;
+            border-radius: 2px;
+            border: solid 1px #cccccc;
+            background-color: #ffffff;
+        }
+    </style>
     <script>
         var zTree;
-        var settings = {
-            treeId:"tree_menu",//唯一标识
+        var setting = {
+            treeId:"tree_menu",
             async:{
                 enable: true,//是否异步
                 dataType:'json',
-                url:"",//异步加载下一一级加点的URL
-                autoParam:["id", "parentid", "name"],//自动传到后端,后端用来查找对应的子节点信息的参数
+                url:"",
+                autoParam:["id", "pId", "name"],//自动传到后端,后端用来查找对应的子节点信息的参数
             },
             view:{
                 showTitle:false,
                 addHoverDom: addHoverDom,//鼠标hover,显示添加节点
                 removeHoverDom: removeHoverDom, //移除
-                // addDiyDom: addDiyDom,//固定显示可编辑图标
             },
             data: {
                 simpleData: {
                     enable: true,  //true 、 false 分别表示 使用 、 不使用 简单数据模式
                     idKey: "id",  //节点数据中保存唯一标识的属性名称
-                    pIdKey: "parentid",    //节点数据中保存其父节点唯一标识的属性名称
+                    pIdKey: "pId",    //节点数据中保存其父节点唯一标识的属性名称
                     rootPId: 0  //用于修正根节点父节点数据，即 pIdKey 指定的属性值
                 },
                 key: {
-                    name: "name"  //zTree 节点数据保存节点名称的属性名称  默认值："name"
+                    name: "name",  //zTree 节点数据保存节点名称的属性名称  默认值："name"
+                    icon: "menuIcon"
                 }
             },
             check:{
@@ -45,8 +57,10 @@
                 showRemoveBtn:setRemoveBtn,//是否显示删除按钮
                 showRenameBtn:setRenameBtn,//是否显示编辑按钮
                 drag:{
+                    prev:false,
+                    next:false,
                     isMove:true,
-                    autoOpenTime:200  //拖拽时，父节点自动展开的延时间隔
+                    autoOpenTime:200
                 }
             },
             callback: {
@@ -54,92 +68,49 @@
                 beforeDrop: zTreeBeforeDrop,//拖拽操作结束前
                 onDrop: zTreeOnDrop,//拖拽操作结束后
                 beforeRemove: zTreeBeforeRemove,//删除操作前
+                beforeRename: zTreeBeforeRename,//修改节点名称之后，更新数据之前，用于判断是否执行onRename
+                onRename: zTreeOnRename,//修改节点名称后触发
             }
         };
-        var zNodes =[
-            { id:1, parentid:0,  name:"碧辟（中国）投资有限公司", open:true},
-                    { id:111, parentid:1, name:"山东东明英伦石油有限公司"},
-                         { id:1111, parentid:111, name:"1 区域"},
-                             { id:11111, parentid:1111, name:"A加油站"},
-                             { id:11112, parentid:1111, name:"A1加油站"},
-                             { id:11113, parentid:1111, name:"A2加油站"},
-                         { id:1112, parentid:111, name:"2 区域"},
-                         { id:1113, parentid:111, name:"3 区域"},
-                    { id:112, parentid:1, name:"河北东明英伦石油有限公司"},
-                            { id:11112, parentid:112, name:"B加油站"},
-                    { id:113, parentid:1, name:"河南东明英伦石油有限公司"},
-                            { id:11113, parentid:113, name:"C加油站"},
-                    { id:114, parentid:1, name:"济南润明化工有限公司"},
-                            { id:11114, parentid:114, name:"D加油站"},
-                            { id:11115, parentid:114, name:"E加油站"},
-                    { id:115, parentid:1, name:"碧辟（山东）石油有限公司"},
-                            { id:11116, parentid:115, name:"F加油站"},
+        var zTreeNodes =[
+            { id:1, pId:0, name:"根节点", open:true},
+            { id:11, pId:1, name:"A父节点"},
+                { id:111, pId:11, name:"A叶子节点"},
+            { id:12, pId:1, name:"B父节点"},
+                { id:121, pId:12, name:"B叶子节点"},
+                { id:122, pId:12, name:"C叶子节点"},
         ];
+
         //初始化树
         function initZTree(){
             $.ajax({
-                url:"organize!treeLevel.action",//根节点(顶级节点的方法)
+                url:"这里写初始化树的url",
                 type:"post",
                 dataType: "json",
                 success: function(data){
-                    console.log(data);
-                    var zTreeObj = $.fn.zTree.init($("#zTree"),setting, data);
-                    //让第一个父节点展开
-                    var rootNode_0 = zTreeObj.getNodeByParam('parentid',0,null);
-                    zTreeObj.expandNode(rootNode_0, true, false, false, false);
                 },
                 error: function(){
-
                 }
             });
         };
-        // //固定显示图标
-        // function addDiyDom(treeId, treeNode) {
-        //     //只有除根节点以外的有限公司下可以添加区域
-        //     if(isEdit == false || treeNode.parentid == 0 || regex.test(treeNode.name) == false){
-        //         return false;
-        //     }
-        //     else{
-        //         var sObj = $("#" + treeNode.tId + "_span"); //获取节点信息
-        //         if (treeNode.editNameFlag || $("#addBtn_"+treeNode.id).length>0) return;
-        //         // var removeStr = "<span class='button remove' id='removeBtn_" + treeNode.id + "' title='remove node' οnfοcus='this.blur();'></span>";
-        //         // sObj.append(remove);
-        //         // var editStr = "<span class='button edit' id='editBtn_" + treeNode.id + "' title='edit node' οnfοcus='this.blur();'></span>";
-        //         // sObj.append(editStr);
-        //         var addStr = "<span class='button add' id='addBtn_" + treeNode.id + "' title='add node' οnfοcus='this.blur();'></span>"; //定义添加按钮
-        //         sObj.append(addStr);//加载添加按钮
-        //         var btn = $("#addBtn_"+treeNode.id);
-        //         //绑定添加事件，并定义添加操作
-        //         if (btn) btn.bind("click", function(){
-        //             var zTree = $.fn.zTree.getZTreeObj("treeDemo");
-        //             //每增加一个子节点，同时将子节点变为可编辑模式，暂定所有新加节点id为9（联调时更改）
-        //             zTree.addNodes(treeNode, {id:'9', parentid:treeNode.id, name:"new node" + (newCount++)});
-        //             //node为所有新加节点的对象数组
-        //             var node = zTree.getNodesByParam("id", '9', null);
-        //             for(var index in node){
-        //                 zTree.editName(node[index]);
-        //             }
-        //             return false;
-        //             //将新节点添加到数据库中
-        //             // var name='NewNode';
-        //             // $.post('./index.php?r=data/addtree&parentid='+treeNode.id+'&name='+name,function (data) {
-        //             //     var newID = data; //获取新添加的节点Id
-        //             //     zTree.addNodes(treeNode, {id:newID, parentid:treeNode.id, name:name}); //页面上添加节点
-        //             //     var node = zTree.getNodeByParam("id", newID, null); //根据新的id找到新添加的节点
-        //             //     zTree.selectNode(node); //让新添加的节点处于选中状态
-        //             // });
-        //         });
-        //     }
-        // };
+
+        //这一部分标志为为了满足需求而设立，用于判断
+        var isEdit = false;
+        var isArea;
+        var isBU;
+        var renameAgain;
+        var addNew;
+        var renameAgainName;
+
+        var regex1=/新增节点$/;
+        var regex2=/父节点$/;
+        var regex3=/叶子节点$/;
+        var regex4=/根节点$/;
+
         //鼠标移入显示添加节点
-        var isEdit = true;
-        var newCount = 1;
         function addHoverDom(treeId, treeNode) {
-            //只有除根节点以外的有限公司下可以添加区域
-            if(isEdit == false || treeNode.parentid == 0 || regex.test(treeNode.name) == false){
-                return false;
-            }
-            else{
+            //公司下可以添加
+            if( (regex4.test(treeNode.name) == true || regex2.test(treeNode.name) == true) && isEdit == true){
                 var sObj = $("#" + treeNode.tId + "_span"); //获取节点信息
                 if (treeNode.editNameFlag || $("#addBtn_"+treeNode.id).length>0) return;
                 var addStr = "<span class='button add' id='addBtn_" + treeNode.id + "' title='add node' οnfοcus='this.blur();'></span>"; //定义添加按钮
@@ -148,35 +119,39 @@
                 //绑定添加事件，并定义添加操作
                 if (btn) btn.bind("click", function(){
                     var zTree = $.fn.zTree.getZTreeObj("treeDemo");
-                    //每增加一个子节点，同时将子节点变为可编辑模式，暂定所有新加节点id为9（联调时更改）
-                    zTree.addNodes(treeNode, {id:'9', parentid:treeNode.id, name:"new node" + (newCount++)});
-                    //node为所有新加节点的对象数组
-                    var node = zTree.getNodesByParam("id", '9', null);
-                    for(var index in node){
-                        zTree.editName(node[index]);
+                    //每增加一个子节点，同时将子节点变为可编辑模式
+                    addNew = true;
+                    //新增节点的id为9
+                    zTree.addNodes(treeNode,0,{id:'9',pId:treeNode.id, name:"新增节点"});
+                    renameAgain = false;
+                    //node为所有新加节点的对象数组(同一父节点)
+                    var node = zTree.getNodesByParam("pId",treeNode.id, null);
+                    zTree.editName(node[0]);
+                    //是否为添加父节点的子节点
+                    if(regex2.test(node[0].name) == true){
+                        isArea = true;
+                        isBU = false;
+                        addNewArea = true;
+                        renameAgain = false;
                     }
-                    return false;
-                    //将新节点添加到数据库中
-                    // var name='NewNode';
-                    // $.post('./index.php?r=data/addtree&parentid='+treeNode.id+'&name='+name,function (data) {
-                    //     var newID = data; //获取新添加的节点Id
-                    //     zTree.addNodes(treeNode, {id:newID, parentid:treeNode.id, name:name}); //页面上添加节点
-                    //     var node = zTree.getNodeByParam("id", newID, null); //根据新的id找到新添加的节点
-                    //     zTree.selectNode(node); //让新添加的节点处于选中状态
-                    // });
+                    //是否为添加根节点的子节点
+                    else if(regex4.test(node[0].name) == true){
+                        isArea = false;
+                        isBU = true;
+                        addNewArea = true;
+                        renameAgain = false;
+                    }
                 });
             }
         };
-       //鼠标移除隐藏添加按钮
+        //鼠标移除隐藏添加按钮
         function removeHoverDom(treeId, treeNode) {
             $("#addBtn_"+treeNode.id).unbind().remove();
         };
-        //根节点不可拖动，'区域'不可拖动
-        var regex2=/区域$/;
+        //新增不可拖动
         function zTreeBeforeDrag(treeId, treeNodes){
             for(var treeNode of treeNodes){
-                var str2 = treeNode .name;
-                if(treeNode.parentid == 0 || regex2.test(str2) == true){
+                if(regex1.test(treeNode.name) == true){
                     return false;
                     break;
                 }
@@ -186,97 +161,161 @@
         };
         //拖拽操作结束前
         function zTreeBeforeDrop(treeId, treeNodes, targetNode, moveType) {
-
-           // console.log(targetNode);
             //禁止拖拽节点成为根节点
             if (targetNode == null || (moveType != "inner" && !targetNode.parentTId)){
-                console.log('false');
                 return false;
             }
-            //'公司'只能成为公司的子节点
-            else if( regex.test(treeNodes[0].name) == true && targetNode.parentid != 0 && targetNode.parentid == 1 ){
+            //父节点不能是叶子节点的子节点
+            else if(regex2.test(treeNodes[0].name) == true && regex3.test(targetNode.name) == false ){
+                treeNodes.pId = targetNode.id;
                 return true;
             }
-            //'站点'不可移出所属公司
-            else if(regex1.test(treeNodes[0].name) == true){
+            //叶子节点均可移动
+            else if(regex3.test(treeNodes[0].name) == true){
                 return true;
             }
-            else
+            else{
                 return false;
-
-
+            }
         };
-        //拖拽操作结束后,对应修改被拖动节点的parentid
+        //拖拽操作结束后,对应修改被拖动节点的pId
         function zTreeOnDrop(event, treeId, treeNodes, targetNode, moveType) {
             //获取被拖动的节点
             for (var index in treeNodes) {
-                treeNodes[index].parentid = targetNode.id;
+                treeNodes[index].pId = targetNode.id;
             }
         };
-        //根节点/公司/加油站不可删除
-         function setRemoveBtn(treeId,treeNode){
-             if(treeNode.parentid == 0 || regex.test(treeNode.name) == true || regex1.test(treeNode.name) == true)
-                 return false;
-             else
-                 return true;
-         };
-        //区域删除后，不删除其子节点
-        function zTreeBeforeRemove(treeId, treeNode) {
-            var arrs = treeNode.children;
-            for(var arr of arrs){
-                arr.parentid = treeNode.getParentNode().id;
-            }
-            //删除区域，其子节点添加到对应区域父节点中
-            var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
-            var newNodes = arrs;
-            newNodes = treeObj.addNodes(treeNode.getParentNode(), newNodes);
-        }
-        //公司名/加油站不可更改
-        var regex=/公司$/;
-        var regex1=/加油站$/;
-        function setRenameBtn(treeId,treeNode){
-            var str = treeNode.name;
-            if(regex.test(str) == true || regex1.test(str) == true)
+        //删除操作begin
+        //根节点/父节点/叶子节点不可删除
+        function setRemoveBtn(treeId,treeNode){
+            if(treeNode.pId == 0 || regex2.test(treeNode.name) || regex3.test(treeNode.name) )
                 return false;
             else
                 return true;
         };
-        //可编辑状态
+        //新增节点删除后，不删除其子节点
+        function zTreeBeforeRemove(treeId, treeNode) {
+            var arrs = treeNode.children;
+            if(arrs !== undefined){
+                for(var arr of arrs){
+                    arr.pId = treeNode.getParentNode().id;
+                }
+            }
+            else{
+                return true;
+            }
+            //删除新增节点，其子节点添加到对应区域父节点中
+            var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+            var newNodes = arrs;
+            newNodes = treeObj.addNodes(treeNode.getParentNode(),newNodes,true);
+        }
+        //删除操作end
+        //编辑操作begin
+        //根节点/父节点/叶子节点不可更改
+        function setRenameBtn(treeId,treeNode){
+            if( treeNode.type == 0 || regex2.test(treeNode.name) == true || regex3.test(treeNode.name) == true || regex4.test(treeNode.name) == true)
+                return false;
+            else
+                return true;
+        };
+        //l修改后，更新数据前
+        function zTreeBeforeRename(treeId, treeNode, newName, isCancel) {
+            //新增节点可修改
+            if(addNew == false){
+                isCancel = false;
+                renameAgain = true;
+                renameAgainName = treeNode.name;
+                console.log('zTreeBeforeRename:'+renameAgainName);
+                return true;
+            }
+            else if(addNew == true){
+                isCancel = false;
+                renameAgain = false;
+                //addNew = false;
+            }
+            else{
+                isCancel = true;
+            }
+        }
+        //l更新数据
+        function zTreeOnRename(event, treeId, treeNode, isCancel) {
+            if(addNew == true){     //l新加节点
+                if(treeNode.name == ""){
+                    //l对于新加节点，若名称为空 ，则删除
+                    console.log('remove:'+treeNode.id);
+                    var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                    treeObj.removeNode(treeNode);
+                    renameAgain = true;
+                    addNew = false;
+                }
+                else{
+                    addNew = false;
+                    renameAgain = true;
+                }
+            }
+            else if(addNew == false){	//l非新加节点
+                if(treeNode.name == ""){
+                    console.log('zTreeOnRename:'+renameAgainName);
+                    treeNode.name = renameAgainName;
+                    var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                    treeObj.updateNode(treeNode);
+                }
+                else{
+                    console.log('notEmpty:'+treeNode.name);
+                }
+            }
+        }
+        //编辑操作end
+        //可编辑
         function edit(){
             var zTree = $.fn.zTree.getZTreeObj("treeDemo");
             isEdit = true;
             zTree.setEditable(true);
-            settings.view.addHoverDom = addHoverDom;
-            // settings.view.addDiyDom = addDiyDom;
-
+            setting.view.addHoverDom = addHoverDom;
         }
-        //不可编辑状态
+        //保存
         function save(){
             var zTree = $.fn.zTree.getZTreeObj("treeDemo");
             isEdit = false;
             zTree.setEditable(false);
-            settings.view.addHoverDom = null;
-            // settings.view.addDiyDom= null;
+            setting.view.addHoverDom = null;
 
+            var nodes = zTree.transformToArray(zTree.getNodes());
+            console.log(nodes);
+            //输出定义只有id/pId/name四个属性的数组
+            var nodeList = [];
+            for(var i = 0;i<nodes.length;i++){
+                var newObject = {};
+                newObject.id = nodes[i].id;
+                newObject.pId = nodes[i].pId;
+                newObject.name = nodes[i].name;
+                nodeList.push(newObject);
+            }
+            console.log(nodeList);
+        }
+        //重置
+        function reset(){
+            location.reload();
         }
         $(function (){
-            console.log('s');
-            zTreeObj = $.fn.zTree.init($("#treeDemo"), settings, zNodes); //初始化树
-            ///初始化树的方法ajax
-            // initZTree();
-            zTreeObj.expandAll(true);    //true 节点全部展开、false节点全部收缩
+            //静态数据初始化
+            var zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zTreeNodes);
+            zTreeObj.expandAll(true);
+            //初始化树的方法ajax
+            //initZTree();
             save();
         });
     </script>
 </head>
 <body>
 <div>
-    <div>
-        <button onclick="edit();">编辑</button>
-        <button onclick="save();">保存</button>
+    <div style="padding:10px;padding-left:2%;">
+        <button class="btn" style="margin-right:10px;" onclick="edit();">编辑</button>
+        <button class="btn" style="margin-right:10px;" onclick="save();">保存</button>
+        <button class="btn" style="margin-right:10px;" onclick="reset();">重置</button>
     </div>
-    <div>
-        <ul id="treeDemo" class="ztree"></ul>
+    <div class="zTreeDemoBackground" style="width:100%;height:67vh;">
+        <ul id="treeDemo" class="ztree" style="margin-left:2%;height:100%;overflow:auto;"></ul>
     </div>
 </div>
 </body>
